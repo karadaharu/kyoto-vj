@@ -8,6 +8,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+		void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -20,5 +21,14 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+		ofVideoPlayer myPlayer;
+		ofVideoPlayer* movies;
+	int width;
+	int height;
+	int movieWidth;
+	int movieHeight;
+	int* movieWidths;
+	int* movieHeights;
+	bool* movieNeedsRotates;
+	int indPlayingMovie;
 };
