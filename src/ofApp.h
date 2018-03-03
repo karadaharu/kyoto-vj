@@ -21,7 +21,7 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		ofVideoPlayer myPlayer;
+
 		ofVideoPlayer* movies;
 	int width;
 	int height;
@@ -30,5 +30,14 @@ class ofApp : public ofBaseApp{
 	int* movieWidths;
 	int* movieHeights;
 	bool* movieNeedsRotates;
-	int indPlayingMovie;
+	int ind_playing_movie;
+	
+	int ind_anime;
+	int timer_anime;
+	int last_time;
+	int* anime_widths;
+	int* anime_heights;
+	int n_imgs[13]={7, 5, 8, 5, 9, 6, 6, 6, 6, 22, 8, 9, 20};
+	int ind_playing_anime;
+	ofImage** kome;
 };

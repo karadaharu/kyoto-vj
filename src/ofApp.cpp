@@ -4,7 +4,7 @@
 void ofApp::setup(){
 	width = ofGetWindowWidth();
 	height = ofGetWindowHeight();
-	indPlayingMovie = 0;
+	ind_playing_movie = 0;
 	
 	movies = new ofVideoPlayer[6];
 	movieNeedsRotates = new bool[6];
@@ -48,12 +48,43 @@ void ofApp::setup(){
 		movies[i].setLoopState(OF_LOOP_NORMAL);
 	}
 
+	kome = new ofImage*[13];
+	anime_widths = new int[13];
+	anime_heights = new int[13];
+	
+	for (int i = 0; i < 13; i++) {
+		string ind_str = ofToString(i+1);
+		if (i < 10) {
+			ind_str = "0" + ind_str;
+		}
+		cout << ind_str << endl;
+		kome[i] = new ofImage[ n_imgs[i] ];
+		for(int j = 0; j < n_imgs[i]; j++) {
+			cout << "kome/"+ind_str+"/frame" + to_string(j+1) + ".jpg" << endl;
+			kome[i][j].load("kome/"+ind_str+"/frame" + to_string(j+1) + ".jpg");
+		}
+		anime_heights[i] = height;
+		anime_widths[i] = kome[i][0].getWidth() * height / kome[i][0].getHeight();
+	}
+	
+	ind_anime = 0;
+	timer_anime = 300;
+	last_time = 0;
+	ind_playing_anime = 3;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	myPlayer.update();
-	movies[indPlayingMovie].update();
+
+	movies[ind_playing_movie].update();
+	int cur_time = ofGetElapsedTimeMillis();
+	if (cur_time - last_time > timer_anime ) {
+		ind_anime++;
+		if (ind_anime > n_imgs[ind_playing_anime]-1) {
+			ind_anime = 0;
+		}
+		last_time = cur_time;
+	}
 }
 
 void ofApp::exit(){
@@ -61,6 +92,13 @@ void ofApp::exit(){
 	delete [] movieWidths;
 	delete [] movieHeights;
 	delete [] movieNeedsRotates;
+	
+	for (int i = 0; i < 13; i++) {
+		delete [] kome[i];
+	}
+	delete [] kome;
+	delete [] anime_heights;
+	delete [] anime_widths;
 }
 
 //--------------------------------------------------------------
@@ -69,40 +107,42 @@ void ofApp::draw(){
 	ofBackground(255, 255, 255);
 
 	ofTranslate(width/2, height/2);
-
-	if (movieNeedsRotates[indPlayingMovie]) {
-		ofRotate( -90 );
-	}
-	movies[indPlayingMovie].draw(-movieWidths[indPlayingMovie]/2, -movieHeights[indPlayingMovie]/2, movieWidths[indPlayingMovie], movieHeights[indPlayingMovie]);
+//
+//	if (movieNeedsRotates[ind_playing_movie]) {
+//		ofRotate( -90 );
+//	}
+//	movies[ind_playing_movie].draw(-movieWidths[ind_playing_movie]/2, -movieHeights[ind_playing_movie]/2, movieWidths[ind_playing_movie], movieHeights[ind_playing_movie]);
+//
+	kome[ind_playing_anime][ind_anime].draw(-anime_widths[ind_playing_anime]/2, -anime_heights[ind_playing_anime]/2, anime_widths[ind_playing_anime], anime_heights[ind_playing_anime]);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 //	myPlayer.setSpeed( myPlayer.getSpeed() * -1  );
 	if (key == '`') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 0;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 0;
+		movies[ind_playing_movie].play();
 	} else if (key == '1') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 1;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 1;
+		movies[ind_playing_movie].play();
 	}else if (key == '2') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 2;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 2;
+		movies[ind_playing_movie].play();
 	}else if (key == '3') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 3;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 3;
+		movies[ind_playing_movie].play();
 	}else if (key == '4') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 4;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 4;
+		movies[ind_playing_movie].play();
 	}else if (key == '5') {
-		movies[indPlayingMovie].stop();
-		indPlayingMovie = 5;
-		movies[indPlayingMovie].play();
+		movies[ind_playing_movie].stop();
+		ind_playing_movie = 5;
+		movies[ind_playing_movie].play();
 	}
 }
 
