@@ -39,5 +39,7 @@ class ofApp : public ofBaseApp{
 	int* anime_heights;
 	int n_imgs[13]={7, 5, 8, 5, 9, 6, 6, 6, 6, 22, 8, 9, 20};
 	int ind_playing_anime;
+	
+	int scene;
 	ofImage** kome;
 };

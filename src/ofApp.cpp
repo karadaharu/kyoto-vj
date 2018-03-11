@@ -54,7 +54,7 @@ void ofApp::setup(){
 	
 	for (int i = 0; i < 13; i++) {
 		string ind_str = ofToString(i+1);
-		if (i < 10) {
+		if (i+1 < 10) {
 			ind_str = "0" + ind_str;
 		}
 		cout << ind_str << endl;
@@ -70,7 +70,9 @@ void ofApp::setup(){
 	ind_anime = 0;
 	timer_anime = 300;
 	last_time = 0;
-	ind_playing_anime = 3;
+	ind_playing_anime = 2;
+	
+	scene = 0;
 }
 
 //--------------------------------------------------------------
@@ -107,42 +109,90 @@ void ofApp::draw(){
 	ofBackground(255, 255, 255);
 
 	ofTranslate(width/2, height/2);
-//
-//	if (movieNeedsRotates[ind_playing_movie]) {
-//		ofRotate( -90 );
-//	}
-//	movies[ind_playing_movie].draw(-movieWidths[ind_playing_movie]/2, -movieHeights[ind_playing_movie]/2, movieWidths[ind_playing_movie], movieHeights[ind_playing_movie]);
-//
-	kome[ind_playing_anime][ind_anime].draw(-anime_widths[ind_playing_anime]/2, -anime_heights[ind_playing_anime]/2, anime_widths[ind_playing_anime], anime_heights[ind_playing_anime]);
+	if (scene==0) {
+		if (movieNeedsRotates[ind_playing_movie]) {
+			ofRotate( -90 );
+		}
+		movies[ind_playing_movie].draw(-movieWidths[ind_playing_movie]/2, -movieHeights[ind_playing_movie]/2, movieWidths[ind_playing_movie], movieHeights[ind_playing_movie]);
+	
+	} else if (scene == 1) {
+		kome[ind_playing_anime][ind_anime].draw(-anime_widths[ind_playing_anime]/2, -anime_heights[ind_playing_anime]/2, anime_widths[ind_playing_anime], anime_heights[ind_playing_anime]);
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 //	myPlayer.setSpeed( myPlayer.getSpeed() * -1  );
-	if (key == '`') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 0;
-		movies[ind_playing_movie].play();
-	} else if (key == '1') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 1;
-		movies[ind_playing_movie].play();
-	}else if (key == '2') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 2;
-		movies[ind_playing_movie].play();
-	}else if (key == '3') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 3;
-		movies[ind_playing_movie].play();
-	}else if (key == '4') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 4;
-		movies[ind_playing_movie].play();
-	}else if (key == '5') {
-		movies[ind_playing_movie].stop();
-		ind_playing_movie = 5;
-		movies[ind_playing_movie].play();
+	if (key == ' ') {
+		scene = 1 - scene;
+	}
+	if (scene == 0) {
+		if (key == '`') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 0;
+			movies[ind_playing_movie].play();
+		} else if (key == '1') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 1;
+			movies[ind_playing_movie].play();
+		}else if (key == '2') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 2;
+			movies[ind_playing_movie].play();
+		}else if (key == '3') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 3;
+			movies[ind_playing_movie].play();
+		}else if (key == '4') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 4;
+			movies[ind_playing_movie].play();
+		}else if (key == '5') {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = 5;
+			movies[ind_playing_movie].play();
+		}
+	} else if (scene == 1) {
+		if (key == '`') {
+			ind_playing_anime = 0;
+			ind_anime = 0;
+		} else if (key == '1') {
+			ind_playing_anime = 1;
+			ind_anime = 0;
+		}else if (key == '2') {
+			ind_playing_anime = 2;
+			ind_anime = 0;
+		}else if (key == '3') {
+			ind_playing_anime = 3;
+			ind_anime = 0;
+		}else if (key == '4') {
+			ind_playing_anime = 4;
+			ind_anime = 0;
+		}else if (key == '5') {
+			ind_playing_anime = 5;
+			ind_anime = 0;
+		} else if (key == '6') {
+			ind_playing_anime = 6;
+			ind_anime = 0;
+		} else if (key == '7') {
+			ind_playing_anime = 7;
+			ind_anime = 0;
+		} else if (key == '8') {
+			ind_playing_anime = 8;
+			ind_anime = 0;
+		} else if (key == '9') {
+			ind_playing_anime = 9;
+			ind_anime = 0;
+		} else if (key == '0') {
+			ind_playing_anime = 10;
+			ind_anime = 0;
+		} else if (key == '-') {
+			ind_playing_anime = 11;
+			ind_anime = 0;
+		} else if (key == '=') {
+			ind_playing_anime = 12;
+			ind_anime = 0;
+		}
 	}
 }
 
