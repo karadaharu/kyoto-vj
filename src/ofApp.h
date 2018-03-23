@@ -30,6 +30,8 @@ class ofApp : public ofBaseApp{
 	int* movieWidths;
 	int* movieHeights;
 	bool* movieNeedsRotates;
+	int* movieFrameStarts;
+	int* movieFrameEnds;
 	int ind_playing_movie;
 	
 	int ind_anime;
