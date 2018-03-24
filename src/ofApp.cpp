@@ -5,49 +5,60 @@ void ofApp::setup(){
 	width = ofGetWindowWidth();
 	height = ofGetWindowHeight();
 
+	n_movie = 3;
+	movies = new ofVideoPlayer[n_movie];
+	movieNeedsRotates = new bool[n_movie];
+	movieWidths = new int[n_movie];
+	movieHeights = new int[n_movie];
+	movieFrameStarts = new int[n_movie];
+	movieFrameEnds = new int[n_movie];
 	
-	movies = new ofVideoPlayer[6];
-	movieNeedsRotates = new bool[6];
-	movieWidths = new int[6];
-	movieHeights = new int[6];
-	movieFrameStarts = new int[6];
-	movieFrameEnds = new int[6];
+	movie_key_frames = new int*[n_movie];
+	movie_key_frames[0] = new int[n_keys[0]];
+	movie_key_frames[0][0] = 1;
 	
+	movie_key_frames[1] = new int[n_keys[1]];
+	movie_key_frames[1][0] = 83;
+
+	movie_key_frames[2] = new int[n_keys[2]];
+	movie_key_frames[2][0] = 359;
+	movie_key_frames[2][1] = 427;
+	movie_key_frames[2][2] = 499;
+	movie_key_frames[2][3] = 540;
 	
-	movies[0].load("movie/001_17cut.mp4");
-	movieNeedsRotates[0] = true;
-	movieWidths[0] = height;
-	movieHeights[0] = movies[0].getHeight() * height / movies[0].getWidth();
+	movies[1].load("movie/001_17cut.mp4");
+	movieNeedsRotates[1] = true;
+	movieWidths[1] = height;
+	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
+	
+	movies[0].load("movie/003.mp4");
+	movieNeedsRotates[0] =false;
+	movieWidths[0] = width;
+	movieHeights[0] = movies[0].getHeight() * width / movies[0].getWidth();
+	
+	movies[2].load("movie/007.mp4");
+	movieNeedsRotates[2] = true;
+	movieWidths[2] = height;
+	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
+	
 
 	
- 	movies[1].load("movie/002_17cut.mp4");
-	movieNeedsRotates[1] = false;
-	movieWidths[1] = width;
-	movieHeights[1] = movies[1].getHeight() * width / movies[1].getWidth();
+// 	movies[1].load("movie/002_17cut.mp4");
+//	movieNeedsRotates[1] = false;
+//	movieWidths[1] = width;
+//	movieHeights[1] = movies[1].getHeight() * width / movies[1].getWidth();
+//	
+//	movies[3].load("movie/006_17-1.mp4");
+//	movieNeedsRotates[3] = false;
+//	movieWidths[3] = width;
+//	movieHeights[3] = movies[3].getHeight() * width / movies[3].getWidth();
+//	
+//	movies[4].load("movie/006_17-2.mp4");
+//	movieNeedsRotates[4] = false;
+//	movieWidths[4] = width;
+//	movieHeights[4] = movies[4].getHeight() * width / movies[4].getWidth();
 	
-	movies[2].load("movie/003.mp4");
-	movieNeedsRotates[2] =false;
-	movieWidths[2] = width;
-	movieHeights[2] = movies[2].getHeight() * width / movies[2].getWidth();
-	
-	
-	movies[3].load("movie/006_17-1.mp4");
-	movieNeedsRotates[3] = false;
-	movieWidths[3] = width;
-	movieHeights[3] = movies[3].getHeight() * width / movies[3].getWidth();
-	
-	movies[4].load("movie/006_17-2.mp4");
-	movieNeedsRotates[4] = false;
-	movieWidths[4] = width;
-	movieHeights[4] = movies[4].getHeight() * width / movies[4].getWidth();
-	
-
-	movies[5].load("movie/007.mp4");
-	movieNeedsRotates[5] = true;
-	movieWidths[5] = height;
-	movieHeights[5] = movies[5].getHeight() * height / movies[5].getWidth();
-		
-	for(int i = 0; i < 6; i++) {
+	for(int i = 0; i < n_movie; i++) {
 		movies[i].setLoopState(OF_LOOP_NORMAL);
 	}
 
@@ -72,27 +83,84 @@ void ofApp::setup(){
 	
 	ind_playing_movie = 0;
 	movies[ind_playing_movie].play();
-	movies[0].setFrame(80);
 	
 	ind_anime = 0;
 	timer_anime = 100;
+
 	last_time = 0;
 	ind_playing_anime = 2;
 	
 	scene = 0;
+	
+	timer_movie = 4*1000*60/130;
+	last_time_movie = 0;
+	ind_timer_keys_scene0 = 0;
+	
+	cout << "movie:" << movies[0].isPlaying() << endl;
+	last_key = 0;
 }
 
-//--------------------------------------------------------------
-void ofApp::update(){
 
+void ofApp::updateScene0(){
 	movies[ind_playing_movie].update();
-	int cur_time = ofGetElapsedTimeMillis();
+	
+	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
+		ind_timer_keys_scene0++;
+		if (ind_timer_keys_scene0 <= 2) {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = ind_timer_keys_scene0;
+			movies[ind_playing_movie].play();
+		}
+	}
+	
+	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
+		ind_timer_keys_scene0++;
+		if (ind_timer_keys_scene0 <= 2) {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = ind_timer_keys_scene0;
+			movies[ind_playing_movie].play();
+		}
+	}
+	
+	if(cur_time - last_time_movie > timer_movie){
+		int key = movie_key_frames[ind_playing_movie][0];
+		
+		// 唇の色
+		if (ind_playing_movie == 2 && last_key != 540) {
+			key = movie_key_frames[ind_playing_movie][ int(ofRandom(1, n_keys[ind_playing_movie]-0.3)) ];
+		}
+		last_key = key;
+		
+		movies[ind_playing_movie].setFrame(key);
+		last_time_movie = cur_time;
+		
+		if (ind_timer_keys_scene0 == 3 && ofRandom(1) > 0.5) {
+			movies[ind_playing_movie].stop();
+			ind_playing_movie = int(ofRandom(0, 2.9));
+			movies[ind_playing_movie].play();
+		}
+	}
+}
+
+void ofApp::updateScene1(){
 	if (cur_time - last_time > timer_anime ) {
 		ind_anime++;
 		if (ind_anime > n_imgs[ind_playing_anime]-1) {
 			ind_anime = 0;
 		}
 		last_time = cur_time;
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+	cur_time = ofGetElapsedTimeMillis();
+	cur_time_sec = int(ofGetElapsedTimef());
+	
+	if (scene == 0) {
+		updateScene0();
+	} else if (scene == 1){
+		updateScene1();
 	}
 }
 
@@ -103,6 +171,12 @@ void ofApp::exit(){
 	delete [] movieNeedsRotates;
 	delete [] movieFrameStarts;
 	delete [] movieFrameEnds;
+	
+	for (int i =0; i < n_movie; i++) {
+		delete [] movie_key_frames[i];
+	}
+	delete [] movie_key_frames;
+	
 	for (int i = 0; i < 13; i++) {
 		delete [] kome[i];
 	}
