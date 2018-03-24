@@ -97,9 +97,16 @@ void ofApp::setup(){
 	cout << "movie:" << movies[0].isPlaying() << endl;
 	last_key = 0;
 	
+	last_time_scene_switch=0;
+	
 	anime_order = 0;
 }
 
+void ofApp::switchMovie(int nex_ind){
+	movies[ind_playing_movie].stop();
+	ind_playing_movie = nex_ind;
+	movies[ind_playing_movie].play();
+}
 
 void ofApp::updateScene0(){
 	movies[ind_playing_movie].update();
@@ -107,9 +114,7 @@ void ofApp::updateScene0(){
 	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
 		ind_timer_keys_scene0++;
 		if (ind_timer_keys_scene0 <= 2) {
-			movies[ind_playing_movie].stop();
-			ind_playing_movie = ind_timer_keys_scene0;
-			movies[ind_playing_movie].play();
+			switchMovie(ind_timer_keys_scene0);
 		}
 	}
 	
@@ -126,9 +131,7 @@ void ofApp::updateScene0(){
 		last_time_movie = cur_time;
 		
 		if (ind_timer_keys_scene0 == 3 && ofRandom(1) > 0.5) {
-			movies[ind_playing_movie].stop();
-			ind_playing_movie = int(ofRandom(0, 2.9));
-			movies[ind_playing_movie].play();
+			switchMovie(int(ofRandom(0, 2.9)));
 		}
 	}
 }
@@ -174,7 +177,7 @@ void ofApp::updateScene1(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	cur_time = ofGetElapsedTimeMillis();
-	cur_time_sec = int(ofGetElapsedTimef());
+	cur_time_sec = int(ofGetElapsedTimef()) - last_time_scene_switch;
 	
 	if (scene == 0) {
 		updateScene0();
@@ -227,9 +230,13 @@ void ofApp::keyPressed(int key){
 		ofToggleFullscreen();
 		setSize();
 	}
-//	myPlayer.setSpeed( myPlayer.getSpeed() * -1  );
 	if (key == ' ') {
 		scene = 1 - scene;
+		last_time_scene_switch =  int(ofGetElapsedTimef());
+		ind_timer_keys_scene1 = 0;
+		ind_timer_keys_scene0 = 0;
+		anime_order = 0;
+		switchMovie(0);
 	} else if (key == 'q') {
 		if (movies[ind_playing_movie].isPlaying()) {
 			cout << "frame:" << movies[ind_playing_movie].getCurrentFrame() << endl;
@@ -238,8 +245,6 @@ void ofApp::keyPressed(int key){
 			movies[ind_playing_movie].play();
 		}
 	} else if (key == 'w') {
-
-
 		movies[5].setFrame(359);
 	} else if (key == 'e') {
 		movies[5].setFrame(427);

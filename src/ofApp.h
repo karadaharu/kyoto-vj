@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "SoundReact.h"
 
 class ofApp : public ofBaseApp{
 
@@ -10,6 +11,7 @@ class ofApp : public ofBaseApp{
 	void updateScene0();
 	void updateScene1();
 	void setSize();
+	void switchMovie(int nex_ind);
 
 		void draw();
 		void exit();
@@ -48,6 +50,8 @@ class ofApp : public ofBaseApp{
 	int ind_timer_keys_scene0;
 	int last_time_movie;
 	
+	int last_time_scene_switch;
+	
 	
 	int n_anime;
 	int ind_anime;
@@ -61,7 +65,8 @@ class ofApp : public ofBaseApp{
 	int ind_playing_anime;
 	int anime_order;
 	
-	int timer_keys_scene1[2] = {10, 11};
+//	int timer_keys_scene1[2] = {600, 1200};
+	int timer_keys_scene1[2] = {10, 20};
 	int ind_timer_keys_scene1;
 	
 	int cur_time;
