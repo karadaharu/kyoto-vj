@@ -2,8 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	width = ofGetWindowWidth();
-	height = ofGetWindowHeight();
+
+
 
 	n_movie = 3;
 	movies = new ofVideoPlayer[n_movie];
@@ -28,18 +28,14 @@ void ofApp::setup(){
 	
 	movies[1].load("movie/001_17cut.mp4");
 	movieNeedsRotates[1] = true;
-	movieWidths[1] = height;
-	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
 	
 	movies[0].load("movie/003.mp4");
 	movieNeedsRotates[0] =false;
-	movieWidths[0] = width;
-	movieHeights[0] = movies[0].getHeight() * width / movies[0].getWidth();
-	
+
 	movies[2].load("movie/007.mp4");
 	movieNeedsRotates[2] = true;
-	movieWidths[2] = height;
-	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
+	
+
 	
 
 	
@@ -71,15 +67,13 @@ void ofApp::setup(){
 		if (i+1 < 10) {
 			ind_str = "0" + ind_str;
 		}
-		cout << ind_str << endl;
 		kome[i] = new ofImage[ n_imgs[i] ];
 		for(int j = 0; j < n_imgs[i]; j++) {
-			cout << "kome/"+ind_str+"/frame" + to_string(j+1) + ".jpg" << endl;
 			kome[i][j].load("kome/"+ind_str+"/frame" + to_string(j+1) + ".jpg");
 		}
-		anime_heights[i] = height;
-		anime_widths[i] = kome[i][0].getWidth() * height / kome[i][0].getHeight();
 	}
+	
+	setSize();
 	
 	ind_playing_movie = 0;
 	movies[ind_playing_movie].play();
@@ -204,6 +198,10 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	if (key == 'f') {
+		ofToggleFullscreen();
+		setSize();
+	}
 //	myPlayer.setSpeed( myPlayer.getSpeed() * -1  );
 	if (key == ' ') {
 		scene = 1 - scene;
@@ -304,7 +302,24 @@ void ofApp::keyPressed(int key){
 	}
 
 }
-
+void ofApp::setSize() {
+	width = ofGetWindowWidth();
+	height = ofGetWindowHeight();
+	movieWidths[1] = height;
+	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
+	
+	movieWidths[0] = width;
+	movieHeights[0] = movies[0].getHeight() * width / movies[0].getWidth();
+	
+	movieWidths[2] = height;
+	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
+	
+	
+	for (int i = 0; i < 13; i++) {
+		anime_heights[i] = height;
+		anime_widths[i] = kome[i][0].getWidth() * height / kome[i][0].getHeight();
+	}
+}
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
 

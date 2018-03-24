@@ -9,6 +9,7 @@ class ofApp : public ofBaseApp{
 		void update();
 	void updateScene0();
 	void updateScene1();
+	void setSize();
 
 		void draw();
 		void exit();
