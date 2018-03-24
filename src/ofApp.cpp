@@ -58,11 +58,12 @@ void ofApp::setup(){
 		movies[i].setLoopState(OF_LOOP_NORMAL);
 	}
 
-	kome = new ofImage*[13];
-	anime_widths = new int[13];
-	anime_heights = new int[13];
+	n_anime = 13;
+	kome = new ofImage*[n_anime];
+	anime_widths = new int[n_anime];
+	anime_heights = new int[n_anime];
 	
-	for (int i = 0; i < 13; i++) {
+	for (int i = 0; i < n_anime; i++) {
 		string ind_str = ofToString(i+1);
 		if (i+1 < 10) {
 			ind_str = "0" + ind_str;
@@ -79,12 +80,15 @@ void ofApp::setup(){
 	movies[ind_playing_movie].play();
 	
 	ind_anime = 0;
-	timer_anime = 100;
+	timer_anime = 0.25*1000*60/130;
+	timer_anime_long = 2*1000*60/130;
+	last_time_long = 0;
+	
 
 	last_time = 0;
 	ind_playing_anime = 2;
 	
-	scene = 0;
+	scene = 1;
 	
 	timer_movie = 4*1000*60/130;
 	last_time_movie = 0;
@@ -92,20 +96,13 @@ void ofApp::setup(){
 	
 	cout << "movie:" << movies[0].isPlaying() << endl;
 	last_key = 0;
+	
+	anime_order = 0;
 }
 
 
 void ofApp::updateScene0(){
 	movies[ind_playing_movie].update();
-	
-	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
-		ind_timer_keys_scene0++;
-		if (ind_timer_keys_scene0 <= 2) {
-			movies[ind_playing_movie].stop();
-			ind_playing_movie = ind_timer_keys_scene0;
-			movies[ind_playing_movie].play();
-		}
-	}
 	
 	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
 		ind_timer_keys_scene0++;
@@ -137,12 +134,40 @@ void ofApp::updateScene0(){
 }
 
 void ofApp::updateScene1(){
+	if (ind_timer_keys_scene1 <= 1 && cur_time_sec > timer_keys_scene1[ind_timer_keys_scene1] ) {
+		ind_timer_keys_scene1++;
+		anime_order = ind_timer_keys_scene1;
+	}
+	
+	
 	if (cur_time - last_time > timer_anime ) {
 		ind_anime++;
 		if (ind_anime > n_imgs[ind_playing_anime]-1) {
 			ind_anime = 0;
 		}
 		last_time = cur_time;
+	}
+	
+	if (cur_time - last_time_long > timer_anime_long) {
+		cout << "ianime:" << ind_playing_anime << endl;
+		switch(anime_order) {
+		case 0:
+				ind_playing_anime++;
+				break;
+		case 1:
+				ind_playing_anime--;
+				break;
+		case 2:
+				ind_playing_anime = ind_playing_anime+int(ofRandom(-5, 5));
+				break;
+		}
+		if (ind_playing_anime > n_anime - 1) {
+			ind_playing_anime = 0;
+		} else if (ind_playing_anime < 0) {
+			ind_playing_anime = n_anime - 1;
+		}
+		ind_anime = 0;
+		last_time_long = cur_time;
 	}
 }
 
@@ -171,7 +196,7 @@ void ofApp::exit(){
 	}
 	delete [] movie_key_frames;
 	
-	for (int i = 0; i < 13; i++) {
+	for (int i = 0; i < n_anime; i++) {
 		delete [] kome[i];
 	}
 	delete [] kome;
@@ -315,7 +340,7 @@ void ofApp::setSize() {
 	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
 	
 	
-	for (int i = 0; i < 13; i++) {
+	for (int i = 0; i < n_anime; i++) {
 		anime_heights[i] = height;
 		anime_widths[i] = kome[i][0].getWidth() * height / kome[i][0].getHeight();
 	}

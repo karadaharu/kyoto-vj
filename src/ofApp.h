@@ -49,13 +49,20 @@ class ofApp : public ofBaseApp{
 	int last_time_movie;
 	
 	
+	int n_anime;
 	int ind_anime;
 	int timer_anime;
+	int timer_anime_long;
+	int last_time_long;
 	int last_time;
 	int* anime_widths;
 	int* anime_heights;
 	int n_imgs[13]={7, 5, 8, 5, 9, 6, 6, 6, 6, 22, 8, 9, 20};
 	int ind_playing_anime;
+	int anime_order;
+	
+	int timer_keys_scene1[2] = {10, 11};
+	int ind_timer_keys_scene1;
 	
 	int cur_time;
 	int cur_time_sec;
