@@ -12,6 +12,7 @@ class ofApp : public ofBaseApp{
 	void updateScene1();
 	void setSize();
 	void switchMovie(int nex_ind);
+	 void audioIn(float * input, int bufferSize, int nChannels);	
 
 		void draw();
 		void exit();
@@ -43,15 +44,16 @@ class ofApp : public ofBaseApp{
 	
 	int timer_movie;
 //	int timer_keys_scene0[3] = {300, 480, 1100};
-	int timer_keys_scene0[3] = {5, 10, 110};
+	int timer_keys_scene0[3] = {5, 6, 1010};
 	int last_key;
 	int** movie_key_frames;
-	int n_keys[3] = {1, 1, 4};
+	int n_keys[3] = {1, 1, 2};
 	int ind_timer_keys_scene0;
 	int last_time_movie;
 	
 	int last_time_scene_switch;
-	
+	float* point_speed;
+	float* point_accel;
 	
 	int n_anime;
 	int ind_anime;
@@ -74,4 +76,10 @@ class ofApp : public ofBaseApp{
 	
 	int scene;
 	ofImage** kome;
+	
+	ofPlanePrimitive plane;
+	int n_plane_ind;
+	ofPlanePrimitive plane_back;
+    ofVboMesh deformPlane;
+		SoundReact sr;
 };
