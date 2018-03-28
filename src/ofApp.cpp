@@ -6,6 +6,7 @@ void ofApp::setup(){
 	sr->setup(this);
 	buffer_size = 64/2;
 	ind_buffer = 0;
+	moving_buffer = 0;
 	power_threshold = 0.5;
 	draw_scale = 1000;
 	
@@ -82,8 +83,10 @@ void ofApp::setup(){
 	movies[ind_playing_movie].play();
 	
 	ind_anime = 0;
+	bpm = 130;
 	timer_anime = 0.25*1000*60/130;
-	timer_anime_long = 1000*60/130;
+	timer_unit = 1000*60/bpm;
+	timer_double = 2*1000*60/bpm;
 	last_time_long = 0;
 	
 
@@ -92,7 +95,7 @@ void ofApp::setup(){
 	
 	scene = 1;
 	
-	timer_movie = 2*1000*60/140;
+
 	last_time_movie = 0;
 	ind_timer_keys_scene0 = 0;
 	
@@ -175,8 +178,8 @@ void ofApp::updateScene0(){
 //		}
 //	}
 //
-//	if(cur_time - last_time_movie > timer_movie){
-	if( power_threshold < sr->_power[ind_buffer] && cur_time - last_time_movie > timer_movie){
+//	if(cur_time - last_time_movie > timer_double){
+	if( power_threshold < sr->_power[ind_buffer] && cur_time - last_time_movie > timer_double){
 		int key = movie_key_frames[ind_playing_movie][0];
 		// 唇の色
 		if (ind_playing_movie == 2) {
@@ -209,7 +212,8 @@ void ofApp::updateScene1(){
 		last_time = cur_time;
 	}
 	
-	if (power_threshold < sr->_power[ind_buffer] && cur_time - last_time_long > timer_anime_long) {
+
+	if (power_threshold < sr->_power[ind_buffer] && cur_time - last_time_long > timer_unit) {
 		switch(anime_order) {
 		case 0:
 				ind_playing_anime++;
@@ -229,6 +233,7 @@ void ofApp::updateScene1(){
 		ind_anime = 0;
 		last_time_long = cur_time;
 	}
+	
 }
 
 //--------------------------------------------------------------
@@ -236,6 +241,15 @@ void ofApp::update(){
 	sr->update();
 	cur_time = ofGetElapsedTimeMillis();
 	cur_time_sec = int(ofGetElapsedTimef()) - last_time_scene_switch;
+	
+	if (cur_time - last_time_moving > timer_unit) {
+		last_time_moving = cur_time;
+		moving_buffer++;
+		if (moving_buffer > buffer_size-1) {
+			moving_buffer = 0;
+		}
+		cout << "power" << sr->_power[1] << endl;
+	}
 	
 	if (scene == 0) {
 		updateScene0();
@@ -255,7 +269,7 @@ void ofApp::update(){
 		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*draw_scale);
 		line.addVertex(pt);
 	}
-	cout << "power" << sr->_power[1] << endl;
+
 	if (sr->_power[1] == INFINITY || sr->_power[1] != sr->_power[1]) {
 		delete sr;
 		sr = new SoundReact();
@@ -349,6 +363,8 @@ void ofApp::draw(){
 	line.draw();
 	ofNoFill();
 	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*draw_scale);
+	ofDrawRectangle(moving_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -0.2*draw_scale);
+
 
 //	ofDrawCircle(0, 0, 100);
 
@@ -401,6 +417,16 @@ void ofApp::keyPressed(int key){
 		draw_scale = draw_scale * 0.8;
 	} else if (key == 'm') {
 		draw_scale = draw_scale * 10 / 8.0;
+	} else if (key == ',' && bpm > 0) {
+		bpm--;
+		cout << "bpm:" << bpm << endl;
+		timer_unit = 1000*60/bpm;
+		timer_double = 2*1000*60/bpm;
+	} else if (key == '.') {
+		bpm++;
+		cout << "bpm:" << bpm << endl;
+		timer_unit = 1000*60/bpm;
+		timer_double = 2*1000*60/bpm;
 	} else {
 		if (scene == 0) {
 			if (key == '`') {
@@ -488,8 +514,8 @@ void ofApp::setSize() {
 
 	
 	for (int i = 0; i < n_anime; i++) {
-		anime_heights[i] = height;
-		anime_widths[i] = kome[i][0].getWidth() * height / kome[i][0].getHeight();
+		anime_heights[i] = height * 0.5;
+		anime_widths[i] = kome[i][0].getWidth() * height * 0.5 / kome[i][0].getHeight();
 	}
 }
 //--------------------------------------------------------------

@@ -42,7 +42,7 @@ class ofApp : public ofBaseApp{
 	int ind_playing_movie;
 	int n_movie;
 	
-	int timer_movie;
+
 //	int timer_keys_scene0[3] = {300, 480, 1100};
 	int timer_keys_scene0[3] = {5, 6, 1010};
 	int last_key;
@@ -58,7 +58,10 @@ class ofApp : public ofBaseApp{
 	int n_anime;
 	int ind_anime;
 	int timer_anime;
-	int timer_anime_long;
+	int timer_unit;
+	int timer_double;
+	int bpm;
+	
 	int last_time_long;
 	int last_time;
 	int* anime_widths;
@@ -76,6 +79,8 @@ class ofApp : public ofBaseApp{
 	int cur_w;
 	float power_threshold;
 	int ind_buffer;
+	int moving_buffer;
+	int last_time_moving;
 	int buffer_size;
 	float draw_scale;
 	
