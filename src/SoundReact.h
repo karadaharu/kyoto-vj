@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "fft.h"
 
-#define BUFFER_SIZE 16
+#define BUFFER_SIZE 64
 #define NUM_WINDOWS 80
 
 class SoundReact

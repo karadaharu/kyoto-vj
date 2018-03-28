@@ -1,7 +1,7 @@
 #include "SoundReact.h"
 
 void SoundReact::setup(ofBaseApp *app){
-	soundStream.listDevices();
+	soundStream.printDeviceList();
 	soundStream.setDeviceID(0);
 	//    soundStream.setInput(0);
 

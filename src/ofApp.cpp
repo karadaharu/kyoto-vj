@@ -2,9 +2,11 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
-	sr.setup(this);
-
+	sr = new SoundReact();
+	sr->setup(this);
+	buffer_size = 64/2;
+	ind_buffer = 0;
+	power_threshold = 0.5;
 	
 	n_movie = 3;
 	movies = new ofVideoPlayer[n_movie];
@@ -28,14 +30,14 @@ void ofApp::setup(){
 //	movie_key_frames[2][3] = 540;
 	
 	// bucket
-	movies[1].load("movie/001_17cut.mp4");
-	movieNeedsRotates[1] = true;
+	movies[1].load("movie/001_17cut_tate.mov");
+//	movieNeedsRotates[1] = true;
 	// coffee
 	movies[0].load("movie/003.mp4");
-	movieNeedsRotates[0] =false;
+//	movieNeedsRotates[0] =false;
 	// face
-	movies[2].load("movie/007.mp4");
-	movieNeedsRotates[2] = true;
+	movies[2].load("movie/007_tate.mov");
+//	movieNeedsRotates[2] = true;
 
 	
 // 	movies[1].load("movie/002_17cut.mp4");
@@ -89,7 +91,7 @@ void ofApp::setup(){
 	
 	scene = 1;
 	
-	timer_movie = 4*1000*60/130;
+	timer_movie = 2*1000*60/140;
 	last_time_movie = 0;
 	ind_timer_keys_scene0 = 0;
 	
@@ -120,6 +122,11 @@ void ofApp::switchMovie(int nex_ind){
 	movies[ind_playing_movie].stop();
 	ind_playing_movie = nex_ind;
 	movies[ind_playing_movie].play();
+	if (ind_playing_movie==2) {
+		movies[2].setSpeed(1.6);
+	}
+
+
 //	float ratio;
 //	switch(ind_playing_movie) {
 //		case 0:
@@ -167,12 +174,13 @@ void ofApp::updateScene0(){
 //		}
 //	}
 //
-	if(cur_time - last_time_movie > timer_movie){
+//	if(cur_time - last_time_movie > timer_movie){
+	if( power_threshold < sr->_power[ind_buffer] && cur_time - last_time_movie > timer_movie){
 		int key = movie_key_frames[ind_playing_movie][0];
-
 		// 唇の色
 		if (ind_playing_movie == 2) {
-			key = movie_key_frames[ind_playing_movie][ int(roundf(ofRandom(0,1))) ];
+			int ind_key = ofRandom(0,1) > 0.3 ? 1 : 0;
+			key = movie_key_frames[ind_playing_movie][ ind_key ];
 			movies[ind_playing_movie].setPaused(false);
 		}
 		last_key = key;
@@ -224,7 +232,7 @@ void ofApp::updateScene1(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	sr.update();
+	sr->update();
 	cur_time = ofGetElapsedTimeMillis();
 	cur_time_sec = int(ofGetElapsedTimef()) - last_time_scene_switch;
 	
@@ -233,10 +241,24 @@ void ofApp::update(){
 	} else if (scene == 1){
 		updateScene1();
 	}
+	
+	line.clear();
+
+	if (scene == 0) {
+		cur_w = movieWidths[ind_playing_movie];
+	}else {
+		cur_w = anime_widths[ind_playing_anime];
+	}
+	for (int i = 0; i < buffer_size; i++) {
+		ofPoint pt;
+		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*1000);
+		cout << "power"<< i << " : "<< sr->_power[i] << endl;
+		line.addVertex(pt);
+	}
 }
 
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-	sr.audioIn(input, bufferSize, nChannels);
+	sr->audioIn(input, bufferSize, nChannels);
 }
 
 void ofApp::exit(){
@@ -260,12 +282,14 @@ void ofApp::exit(){
 	delete [] anime_widths;
 	delete [] point_speed;
 	delete [] point_accel;
+	
+	delete sr;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-//	ofBackground(0, 0, 0);
-	ofBackground(255, 255, 255);
+	ofBackground(0, 0, 0);
+
 	ofSetColor(255, 255, 255);
 	ofTranslate(width/2, height/2);
 	if (scene==0) {
@@ -288,11 +312,12 @@ void ofApp::draw(){
 //		t.bind();
 //		plane_back.drawWireframe();
 //		t.unbind();
-		if (movieNeedsRotates[ind_playing_movie]) {
-			ofRotate( -90 );
-		}
+//		ofPushMatrix();
+//		if (movieNeedsRotates[ind_playing_movie]) {
+//			ofRotate( -90 );
+//		}
 		movies[ind_playing_movie].draw(-movieWidths[ind_playing_movie]/2, -movieHeights[ind_playing_movie]/2, movieWidths[ind_playing_movie], movieHeights[ind_playing_movie]);
-		
+//		ofPopMatrix();
 //		t.bind();
 //		deformPlane.draw();
 //		t.unbind();
@@ -302,9 +327,12 @@ void ofApp::draw(){
 	}
 
 
-//	ofDrawRectangle(100, 100, sr._magnitude[0] * 1000.0, sr._magnitude[0] * 1000.0);
-
-
+//	ofDrawRectangle(100, 100, sr->_magnitude[0] * 1000.0, sr->_magnitude[0] * 1000.0);
+	ofSetColor(255,255,255);
+	ofTranslate(-cur_w / 2, height/2);
+	line.draw();
+	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*1000);
+//	ofDrawCircle(0, 0, 100);
 
 }
 
@@ -313,8 +341,7 @@ void ofApp::keyPressed(int key){
 	if (key == 'f') {
 		ofToggleFullscreen();
 		setSize();
-	}
-	if (key == ' ') {
+	} else if (key == ' ') {
 		scene = 1 - scene;
 		last_time_scene_switch =  int(ofGetElapsedTimef());
 		ind_timer_keys_scene1 = 0;
@@ -344,7 +371,15 @@ void ofApp::keyPressed(int key){
 		movies[1].setFrame(60);
 	} else if (key =='i') {
 		movies[1].setFrame(410);
-	}else {
+	} else if (key == 'h' && ind_buffer > 0) {
+		ind_buffer--;
+	} else if (key == 'j') {
+		power_threshold -= 0.01;
+	} else if (key == 'k') {
+		power_threshold += 0.01;
+	} else if (key == 'l' && ind_buffer < buffer_size - 2) {
+		ind_buffer++;
+	} else {
 		if (scene == 0) {
 			if (key == '`') {
 				switchMovie(0);
@@ -409,6 +444,7 @@ void ofApp::keyPressed(int key){
 			}
 		}
 	}
+	
 
 }
 void ofApp::setSize() {
@@ -417,13 +453,17 @@ void ofApp::setSize() {
 	
 	movieHeights[0] = height;
 	movieWidths[0] = movies[0].getWidth() * height / movies[0].getHeight();
-	
-	movieWidths[1] = height;
-	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
 
-	movieWidths[2] = height;
-	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
-	
+//	movieWidths[1] = height;
+//	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
+	movieHeights[1] = height;
+	movieWidths[1] = movies[1].getWidth() * height / movies[1].getHeight();
+
+//	movieWidths[2] = height;
+//	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
+	movieHeights[2] = height;
+	movieWidths[2] = movies[2].getWidth() * height / movies[2].getHeight();
+
 	
 	for (int i = 0; i < n_anime; i++) {
 		anime_heights[i] = height;

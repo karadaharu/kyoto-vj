@@ -73,6 +73,10 @@ class ofApp : public ofBaseApp{
 	
 	int cur_time;
 	int cur_time_sec;
+	int cur_w;
+	float power_threshold;
+	int ind_buffer;
+	int buffer_size;
 	
 	int scene;
 	ofImage** kome;
@@ -81,5 +85,6 @@ class ofApp : public ofBaseApp{
 	int n_plane_ind;
 	ofPlanePrimitive plane_back;
     ofVboMesh deformPlane;
-		SoundReact sr;
+	SoundReact* sr;
+	ofPolyline line;
 };
