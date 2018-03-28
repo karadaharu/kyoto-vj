@@ -5,7 +5,7 @@ void ofApp::setup(){
 	sr = new SoundReact();
 	sr->setup(this);
 	buffer_size = 64/2;
-	ind_buffer = 0;
+	ind_buffer = 17;
 	moving_buffer = 0;
 	power_threshold = 0.5;
 	draw_scale = 1000;
@@ -248,7 +248,7 @@ void ofApp::update(){
 		if (moving_buffer > buffer_size-1) {
 			moving_buffer = 0;
 		}
-		cout << "power" << sr->_power[1] << endl;
+		cout << "power : " << sr->_power[ind_buffer] << " threshold : " << power_threshold << endl;
 	}
 	
 	if (scene == 0) {
@@ -257,20 +257,19 @@ void ofApp::update(){
 		updateScene1();
 	}
 	
-	line.clear();
-
 	if (scene == 0) {
 		cur_w = movieWidths[ind_playing_movie];
 	}else {
 		cur_w = anime_widths[ind_playing_anime];
 	}
-	for (int i = 0; i < buffer_size; i++) {
-		ofPoint pt;
-		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*draw_scale);
-		line.addVertex(pt);
-	}
+//	line.clear();
+//	for (int i = 0; i < buffer_size; i++) {
+//		ofPoint pt;
+//		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*draw_scale);
+//		line.addVertex(pt);
+//	}
 
-	if (sr->_power[1] == INFINITY || sr->_power[1] != sr->_power[1]) {
+	if (sr->_power[1] == INFINITY || sr->_power[1] != sr->_power[1] || sr->_power[1]  > pow(10, 30) ) {
 		delete sr;
 		sr = new SoundReact();
 		sr->setup(this);
@@ -352,22 +351,25 @@ void ofApp::draw(){
 
 
 //	ofDrawRectangle(100, 100, sr->_magnitude[0] * 1000.0, sr->_magnitude[0] * 1000.0);
-	if (scene == 0) {
-		ofSetColor(255,255,255);
-	} else {
-		ofSetColor(0,0,0);
-	}
-
-	ofTranslate(-cur_w / 2, height/2);
-
-	line.draw();
-	ofNoFill();
-	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*draw_scale);
-	ofDrawRectangle(moving_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -0.2*draw_scale);
+//	if (scene == 0) {
+//		ofSetColor(255,255,255);
+//	} else {
+//		ofSetColor(0,0,0);
+//	}
+//	ofTranslate(-cur_w / 2, height/2);
+//	line.draw();
+//	ofNoFill();
+//	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*draw_scale);
+//	ofDrawRectangle(moving_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -0.2*draw_scale);
 
 
 //	ofDrawCircle(0, 0, 100);
 
+}
+
+void ofApp::printParams(){
+	cout << "threshold : " << power_threshold  << endl;
+	cout << "ind : " << ind_buffer << endl;
 }
 
 //--------------------------------------------------------------
@@ -407,12 +409,16 @@ void ofApp::keyPressed(int key){
 		movies[1].setFrame(410);
 	} else if (key == 'h' && ind_buffer > 0) {
 		ind_buffer--;
-	} else if (key == 'j') {
-		power_threshold -= 0.01;
+		printParams();
+	} else if (key == 'j' && power_threshold > 0) {
+		power_threshold = power_threshold * 0.9;
+		printParams();
 	} else if (key == 'k') {
-		power_threshold += 0.01;
+		power_threshold = power_threshold * 10 / 9.0;
+		printParams();
 	} else if (key == 'l' && ind_buffer < buffer_size - 2) {
 		ind_buffer++;
+		printParams();
 	} else if (key == 'n') {
 		draw_scale = draw_scale * 0.8;
 	} else if (key == 'm') {

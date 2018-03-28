@@ -13,7 +13,7 @@ class ofApp : public ofBaseApp{
 	void setSize();
 	void switchMovie(int nex_ind);
 	 void audioIn(float * input, int bufferSize, int nChannels);	
-
+	void printParams();
 		void draw();
 		void exit();
 
