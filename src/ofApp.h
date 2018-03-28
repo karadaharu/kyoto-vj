@@ -77,6 +77,7 @@ class ofApp : public ofBaseApp{
 	float power_threshold;
 	int ind_buffer;
 	int buffer_size;
+	float draw_scale;
 	
 	int scene;
 	ofImage** kome;

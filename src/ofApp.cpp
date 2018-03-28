@@ -7,6 +7,7 @@ void ofApp::setup(){
 	buffer_size = 64/2;
 	ind_buffer = 0;
 	power_threshold = 0.5;
+	draw_scale = 1000;
 	
 	n_movie = 3;
 	movies = new ofVideoPlayer[n_movie];
@@ -25,8 +26,8 @@ void ofApp::setup(){
 
 	movie_key_frames[2] = new int[n_keys[2]];
 //	movie_key_frames[2][0] = 359;
-	movie_key_frames[2][0] = 427;
-	movie_key_frames[2][1] = 491;
+	movie_key_frames[2][0] = 426;
+	movie_key_frames[2][1] = 492;
 //	movie_key_frames[2][3] = 540;
 	
 	// bucket
@@ -82,7 +83,7 @@ void ofApp::setup(){
 	
 	ind_anime = 0;
 	timer_anime = 0.25*1000*60/130;
-	timer_anime_long = 2*1000*60/130;
+	timer_anime_long = 1000*60/130;
 	last_time_long = 0;
 	
 
@@ -208,7 +209,7 @@ void ofApp::updateScene1(){
 		last_time = cur_time;
 	}
 	
-	if (cur_time - last_time_long > timer_anime_long) {
+	if (power_threshold < sr->_power[ind_buffer] && cur_time - last_time_long > timer_anime_long) {
 		switch(anime_order) {
 		case 0:
 				ind_playing_anime++;
@@ -251,9 +252,14 @@ void ofApp::update(){
 	}
 	for (int i = 0; i < buffer_size; i++) {
 		ofPoint pt;
-		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*1000);
-		cout << "power"<< i << " : "<< sr->_power[i] << endl;
+		pt.set(i*(cur_w / (buffer_size-1) ),-sr->_power[i]*draw_scale);
 		line.addVertex(pt);
+	}
+	cout << "power" << sr->_power[1] << endl;
+	if (sr->_power[1] == INFINITY || sr->_power[1] != sr->_power[1]) {
+		delete sr;
+		sr = new SoundReact();
+		sr->setup(this);
 	}
 }
 
@@ -288,7 +294,11 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(0, 0, 0);
+	if (scene == 0) {
+		ofBackground(0, 0, 0);
+	} else {
+		ofBackground(255, 255, 255);
+	}
 
 	ofSetColor(255, 255, 255);
 	ofTranslate(width/2, height/2);
@@ -328,10 +338,18 @@ void ofApp::draw(){
 
 
 //	ofDrawRectangle(100, 100, sr->_magnitude[0] * 1000.0, sr->_magnitude[0] * 1000.0);
-	ofSetColor(255,255,255);
+	if (scene == 0) {
+		ofSetColor(255,255,255);
+	} else {
+		ofSetColor(0,0,0);
+	}
+
 	ofTranslate(-cur_w / 2, height/2);
+
 	line.draw();
-	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*1000);
+	ofNoFill();
+	ofDrawRectangle(ind_buffer * cur_w / (buffer_size-1), 0, cur_w / (buffer_size-1), -power_threshold*draw_scale);
+
 //	ofDrawCircle(0, 0, 100);
 
 }
@@ -379,6 +397,10 @@ void ofApp::keyPressed(int key){
 		power_threshold += 0.01;
 	} else if (key == 'l' && ind_buffer < buffer_size - 2) {
 		ind_buffer++;
+	} else if (key == 'n') {
+		draw_scale = draw_scale * 0.8;
+	} else if (key == 'm') {
+		draw_scale = draw_scale * 10 / 8.0;
 	} else {
 		if (scene == 0) {
 			if (key == '`') {
