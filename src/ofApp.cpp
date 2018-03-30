@@ -128,6 +128,8 @@ void ofApp::switchMovie(int nex_ind){
 	movies[ind_playing_movie].play();
 	if (ind_playing_movie==2) {
 		movies[2].setSpeed(1.6);
+		int key = movie_key_frames[ind_playing_movie][ 0 ];
+		movies[ind_playing_movie].setFrame(key);
 	}
 
 
@@ -171,12 +173,12 @@ void ofApp::updateScene0(){
 	}
 //	if ( movies[ind_playing_movie].getCurrentFrame()
 	
-//	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
-//		ind_timer_keys_scene0++;
-//		if (ind_timer_keys_scene0 <= 2) {
-//			switchMovie(ind_timer_keys_scene0);
-//		}
-//	}
+	if (ind_timer_keys_scene0 <= 2 && cur_time_sec > timer_keys_scene0[ind_timer_keys_scene0] ) {
+		ind_timer_keys_scene0++;
+		if (ind_timer_keys_scene0 <= 2) {
+			switchMovie(ind_timer_keys_scene0);
+		}
+	}
 //
 //	if(cur_time - last_time_movie > timer_double){
 	if( power_threshold < sr->_power[ind_buffer] && cur_time - last_time_movie > timer_double){
@@ -191,9 +193,9 @@ void ofApp::updateScene0(){
 		movies[ind_playing_movie].setFrame(key);
 		last_time_movie = cur_time;
 
-//		if (ind_timer_keys_scene0 == 3 && ofRandom(1) > 0.5) {
-//			switchMovie(int(ofRandom(0, 2.9)));
-//		}
+		if (ind_timer_keys_scene0 == 3 && ofRandom(1) > 0.5) {
+			switchMovie(int(ofRandom(1, 2.99)));
+		}
 	}
 }
 
@@ -391,16 +393,12 @@ void ofApp::keyPressed(int key){
 		} else{
 			movies[ind_playing_movie].play();
 		}
-	} else if (key == 'w') {
-		movies[5].setFrame(359);
 	} else if (key == 'e') {
 		movies[2].setFrame(429);
 		movies[2].setPaused(false);
 	} else if (key =='r') {
 		movies[2].setFrame(491);
 		movies[2].setPaused(false);
-	} else if (key =='t') {
-		movies[5].setFrame(540);
 	} else if (key == 'y') {
 		movies[0].setFrame(83);
 	} else if (key =='u') {
@@ -508,16 +506,11 @@ void ofApp::setSize() {
 	movieHeights[0] = height;
 	movieWidths[0] = movies[0].getWidth() * height / movies[0].getHeight();
 
-//	movieWidths[1] = height;
-//	movieHeights[1] = movies[1].getHeight() * height / movies[1].getWidth();
 	movieHeights[1] = height;
 	movieWidths[1] = movies[1].getWidth() * height / movies[1].getHeight();
 
-//	movieWidths[2] = height;
-//	movieHeights[2] = movies[2].getHeight() * height / movies[2].getWidth();
 	movieHeights[2] = height;
 	movieWidths[2] = movies[2].getWidth() * height / movies[2].getHeight();
-
 	
 	for (int i = 0; i < n_anime; i++) {
 		anime_heights[i] = height * 0.5;

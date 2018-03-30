@@ -43,8 +43,8 @@ class ofApp : public ofBaseApp{
 	int n_movie;
 	
 
-//	int timer_keys_scene0[3] = {300, 480, 1100};
-	int timer_keys_scene0[3] = {5, 6, 1010};
+	int timer_keys_scene0[3] = {300, 600, 900};
+//	int timer_keys_scene0[3] = {5, 6, 10};
 	int last_key;
 	int** movie_key_frames;
 	int n_keys[3] = {1, 1, 2};
@@ -70,8 +70,8 @@ class ofApp : public ofBaseApp{
 	int ind_playing_anime;
 	int anime_order;
 	
-//	int timer_keys_scene1[2] = {600, 1200};
-	int timer_keys_scene1[2] = {10, 20};
+	int timer_keys_scene1[2] = {600, 1200};
+//	int timer_keys_scene1[2] = {10, 20};
 	int ind_timer_keys_scene1;
 	
 	int cur_time;
